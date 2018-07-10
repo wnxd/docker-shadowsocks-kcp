@@ -7,6 +7,7 @@ ARG KCP_VER=20180316
 ARG KCP_URL=https://github.com/xtaci/kcptun/releases/download/v$KCP_VER/kcptun-linux-amd64-$KCP_VER.tar.gz
 
 RUN set -ex && \
+    apk upgrade --no-cache && \
     apk add --no-cache --virtual .build-deps \
                                 autoconf \
                                 build-base \
