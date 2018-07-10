@@ -7,7 +7,6 @@ ARG KCP_VER=20180316
 ARG KCP_URL=https://github.com/xtaci/kcptun/releases/download/v$KCP_VER/kcptun-linux-amd64-$KCP_VER.tar.gz
 
 RUN set -ex && \
-    apk upgrade --no-cache && \
     apk add --no-cache --virtual .build-deps \
                                 autoconf \
                                 build-base \
@@ -30,7 +29,7 @@ RUN set -ex && \
                                 asciidoc \
                                 xmlto \
                                 libpcre32 \
-                                g++ 
+                                g++ \
                                 openssh-server && \
     cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
     cd /tmp && \
@@ -97,13 +96,13 @@ CMD /usr/bin/ss-server -s $SERVER_ADDR \
               -d $DNS_ADDR_2 \
               $UDP_RELAY \
               $ARGS \
-              -f /tmp/ss.pid \
-              && /usr/bin/server_linux_amd64 -t "127.0.0.1:$SERVER_PORT" \
+              -f /tmp/ss.pid && \
+    /usr/bin/server_linux_amd64 -t "127.0.0.1:$SERVER_PORT" \
               -l ":$KCP_LISTEN" \
               -key $KCP_PASS \
               --mode $KCP_MODE \
               --crypt $KCP_ENCRYPT \
               --mtu $KCP_MUT \
               $KCP_NOCOMP \
-              $KCP_ARGS \
-              && /usr/sbin/sshd -D
+              $KCP_ARGS && \
+    /usr/sbin/sshd -D
