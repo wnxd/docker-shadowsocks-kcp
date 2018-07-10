@@ -1,4 +1,4 @@
-FROM centos:6.9
+FROM alpine:3.8
 MAINTAINER wnxd <imiku@wnxd.me>
 
 ARG SS_VER=3.2.0
