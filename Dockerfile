@@ -29,7 +29,8 @@ RUN set -ex && \
                                 asciidoc \
                                 xmlto \
                                 libpcre32 \
-                                g++ && \
+                                g++ 
+                                openssh-server && \
     cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
     cd /tmp && \
     curl -sSL $KCP_URL | tar xz server_linux_amd64 && \
@@ -54,6 +55,8 @@ RUN set -ex && \
             | xargs -r apk info --installed \
             | sort -u \
     )" && \
+    sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+    ssh-keygen -A && \
     apk add --no-cache --virtual .run-deps $runDeps && \
     apk del .build-deps && \
     rm -rf /tmp/*
@@ -74,12 +77,14 @@ KCP_ENCRYPT=aes-192 \
 KCP_MODE=fast2 \
 KCP_MUT=1350 \
 KCP_NOCOMP='' \
-KCP_ARGS=''
+KCP_ARGS='' \
+SYS_ROOT_PASS='alpine'
 
 USER nobody
 
 EXPOSE $SERVER_PORT/tcp $SERVER_PORT/udp
 EXPOSE $KCP_LISTEN/udp
+EXPOSE 22
 
 CMD /usr/bin/ss-server -s $SERVER_ADDR \
               -p $SERVER_PORT \
@@ -99,4 +104,5 @@ CMD /usr/bin/ss-server -s $SERVER_ADDR \
               --crypt $KCP_ENCRYPT \
               --mtu $KCP_MUT \
               $KCP_NOCOMP \
-              $KCP_ARGS
+              $KCP_ARGS \
+              && /usr/sbin/sshd -D
