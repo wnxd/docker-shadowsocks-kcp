@@ -106,4 +106,4 @@ CMD /usr/bin/ss-server -s $SERVER_ADDR \
               --mtu $KCP_MUT \
               $KCP_NOCOMP \
               $KCP_ARGS && \
-    /usr/sbin/sshd -D
+    sshd start
