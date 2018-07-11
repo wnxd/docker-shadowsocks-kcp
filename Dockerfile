@@ -8,9 +8,7 @@ ARG KCP_URL=https://github.com/xtaci/kcptun/releases/download/v$KCP_VER/kcptun-l
 
 RUN echo -e "https://mirror.tuna.tsinghua.edu.cn/alpine/latest-stable/main\n" > /etc/apk/repositories
 
-RUN set -ex && \
-    apk upgrade --no-cache && \
-    apk add --no-cache openssh && \
+RUN apk add --no-cache openssh && \
     apk add --no-cache --virtual .build-deps \
                                 autoconf \
                                 build-base \
@@ -82,8 +80,6 @@ KCP_MODE=fast2 \
 KCP_MUT=1350 \
 KCP_NOCOMP='' \
 KCP_ARGS=''
-
-USER nobody
 
 EXPOSE 22
 EXPOSE $SERVER_PORT/tcp $SERVER_PORT/udp
