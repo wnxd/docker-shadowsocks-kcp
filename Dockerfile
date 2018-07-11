@@ -9,33 +9,34 @@ ARG KCP_URL=https://github.com/xtaci/kcptun/releases/download/v${KCP_VER}/kcptun
 ENV ROOT_PASSWORD=centos
 
 RUN yum update -y && \
-    yum install -y initscripts \
-                epel-release \
-                wget \
-                passwd \
-                tar \
-                unzip \
-                curl \
-                openssh-server \
-                libev-dev \
-                linux-headers \
-                libsodium-dev \
-                mbedtls-dev \
-                pcre-dev \
-                tar \
-                tzdata \
-                c-ares-dev \
+    yum install -y openssh-server \
                 git \
+                vim \
+                screen \
+                gettext \
                 gcc \
-                make \
+                autoconf \
                 libtool \
-                zlib-dev \
                 automake \
-                openssl \
+                make \
                 asciidoc \
                 xmlto \
-                libpcre32 \
-                g++
+                udns-devel \
+                libev-devel \
+                zlib-devel \
+                openssl-devel \
+                unzip \
+                libevent \
+                pcre \
+                pcre-devel \
+                perl \
+                perl-devel \
+                cpio \
+                expat-devel \
+                gettext-devel \
+                htop \
+                rng-tools \
+                c-ares-devel
 
 RUN sed -i 's/enabled=0/enabled=1/' /etc/yum.repos.d/CentOS-Base.repo && \
     echo "root:${ROOT_PASSWORD}" | chpasswd && \
