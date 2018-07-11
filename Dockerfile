@@ -8,7 +8,7 @@ ARG KCP_URL=https://github.com/xtaci/kcptun/releases/download/v$KCP_VER/kcptun-l
 
 RUN set -ex && \
     apk upgrade --no-cache && \
-    apk add --no-cache openssh-server && \
+    apk add --no-cache openssh && \
     apk add --no-cache --virtual .build-deps \
                                 autoconf \
                                 build-base \
@@ -56,11 +56,12 @@ RUN set -ex && \
             | xargs -r apk info --installed \
             | sort -u \
     )" && \
-    sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+    echo "root:alpine" | chpasswd && \
+    sed -i s/#PermitRootLogin.*/PermitRootLogin\ yes/ /etc/ssh/sshd_config && \
     ssh-keygen -A && \
     apk add --no-cache --virtual .run-deps $runDeps && \
     apk del .build-deps && \
-    rm -rf /tmp/*
+    rm -rf /var/cache/apk/* /tmp/*
 
 ENV SERVER_ADDR=0.0.0.0 \
 SERVER_PORT=8989 \
@@ -78,14 +79,15 @@ KCP_ENCRYPT=aes-192 \
 KCP_MODE=fast2 \
 KCP_MUT=1350 \
 KCP_NOCOMP='' \
-KCP_ARGS='' \
-SYS_ROOT_PASS='alpine'
+KCP_ARGS=''
 
 USER nobody
 
+EXPOSE 22
 EXPOSE $SERVER_PORT/tcp $SERVER_PORT/udp
 EXPOSE $KCP_LISTEN/udp
-EXPOSE 22
+
+CMD ["/usr/sbin/sshd", "-D"]
 
 CMD /usr/bin/ss-server -s $SERVER_ADDR \
               -p $SERVER_PORT \
@@ -105,5 +107,4 @@ CMD /usr/bin/ss-server -s $SERVER_ADDR \
               --crypt $KCP_ENCRYPT \
               --mtu $KCP_MUT \
               $KCP_NOCOMP \
-              $KCP_ARGS && \
-    /usr/sbin/sshd -D
+              $KCP_ARGS
