@@ -65,9 +65,7 @@ ENV SERVER_ADDR=0.0.0.0 \
 RUN mkdir shadowsocks-libev
 RUN cd shadowsocks-libev
 RUN curl -sSL $SS_URL | tar xz --strip 1
-RUN ./autogen.sh
-RUN ./configure
-RUN make
+RUN ./configure --prefix=/usr --disable-documentation
 RUN make install
 RUN cd ..
 RUN rm -rf shadowsocks-libev
