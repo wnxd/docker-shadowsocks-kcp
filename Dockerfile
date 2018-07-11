@@ -11,6 +11,8 @@ ENV SYS_ROOT_PASS="alpine" \
 
 RUN apk --no-cache upgrade
 RUN apk --no-cache add tzdata
+
+RUN echo 'root:${SYS_ROOT_PASS}' | chpasswd
 RUN echo "${SYS_TIMEZONE}" > /etc/timezone
 RUN ln -sf /usr/share/zoneinfo/${SYS_TIMEZONE} /etc/localtime
 
