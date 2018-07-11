@@ -22,6 +22,7 @@ RUN yum update -y && \
                 asciidoc \
                 xmlto \
                 udns-devel \
+                mbedtls-devel \
                 libev-devel \
                 zlib-devel \
                 openssl-devel \
@@ -36,7 +37,8 @@ RUN yum update -y && \
                 gettext-devel \
                 htop \
                 rng-tools \
-                c-ares-devel
+                c-ares-devel \
+                libsodium-devel
 
 RUN sed -i 's/enabled=0/enabled=1/' /etc/yum.repos.d/CentOS-Base.repo && \
     echo "root:${ROOT_PASSWORD}" | chpasswd && \
@@ -66,7 +68,7 @@ ENV SERVER_ADDR=0.0.0.0 \
 RUN mkdir shadowsocks-libev && \
     cd shadowsocks-libev && \
     curl -sSL ${SS_URL} | tar xz --strip 1 && \
-    ./configure && \
+    ./configure --prefix=/usr --disable-documentation && \
     make install && \
     cd .. && \
     rm -rf shadowsocks-libev && \
