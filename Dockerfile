@@ -1,5 +1,5 @@
 FROM alpine:3.8
-MAINTAINER wnxd <imiku@wnxd.me>
+LABEL MAINTAINER="wnxd <imiku@wnxd.me>"
 
 ARG SS_VER=3.2.0
 ARG SS_URL=https://github.com/shadowsocks/shadowsocks-libev/releases/download/v$SS_VER/shadowsocks-libev-$SS_VER.tar.gz
