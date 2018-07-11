@@ -1,10 +1,10 @@
 FROM centos:6
 LABEL MAINTAINER="wnxd <imiku@wnxd.me>"
 
-ARG SS_VER=3.2.0
-ARG SS_URL=https://github.com/shadowsocks/shadowsocks-libev/releases/download/v$SS_VER/shadowsocks-libev-$SS_VER.tar.gz
 ARG KCP_VER=20180316
 ARG KCP_URL=https://github.com/xtaci/kcptun/releases/download/v$KCP_VER/kcptun-linux-amd64-$KCP_VER.tar.gz
+
+ENV ROOT_PASSWORD=centos
 
 RUN yum update -y
 RUN yum install -y initscripts \
@@ -13,10 +13,30 @@ RUN yum install -y initscripts \
                 passwd \
                 tar \
                 unzip \
-                openssh-server
+                curl \
+                openssh-server \
+                libev-dev \
+                linux-headers \
+                libsodium-dev \
+                mbedtls-dev \
+                pcre-dev \
+                tar \
+                tzdata \
+                c-ares-dev \
+                git \
+                gcc \
+                make \
+                libtool \
+                zlib-dev \
+                automake \
+                openssl \
+                asciidoc \
+                xmlto \
+                libpcre32 \
+                g++
 
 RUN sed -i 's/enabled=0/enabled=1/' /etc/yum.repos.d/CentOS-Base.repo
-RUN echo "root:centos" | chpasswd
+RUN echo "root:${ROOT_PASSWORD}" | chpasswd
 RUN cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
 # 搭建SSH服务器
@@ -27,6 +47,37 @@ RUN mkdir -p /root/.ssh/
 RUN echo "StrictHostKeyChecking=no" > /root/.ssh/config
 RUN echo "UserKnownHostsFile=/dev/null" >> /root/.ssh/config
 RUN /etc/init.d/sshd start
+
+# 搭建Shadowsocks服务器
+ENV SERVER_ADDR=0.0.0.0 \
+    SERVER_PORT=8989 \
+    PASSWORD=wnxd \
+    METHOD=aes-256-cfb \
+    TIMEOUT=300 \
+    FASTOPEN=--fast-open \
+    UDP_RELAY=-u \
+    DNS_ADDR=8.8.8.8 \
+    DNS_ADDR_2=8.8.4.4 \
+    ARGS=''
+
+RUN git clone https://github.com/shadowsocks/shadowsocks-libev.git
+RUN cd shadowsocks-libev
+RUN git submodule update --init --recursive
+RUN ./autogen.sh
+RUN ./configure
+RUN make
+RUN make install
+RUN cd ..
+RUN rm -rf shadowsocks-libev
+RUN git clone https://github.com/shadowsocks/simple-obfs.git
+RUN cd simple-obfs
+RUN git submodule update --init --recursive
+RUN ./autogen.sh
+RUN ./configure
+RUN make 
+RUN make install
+RUN cd ..
+RUN rm -rf simple-obfs
 
 # 清理环境
 RUN yum clean all

@@ -18,3 +18,14 @@ EOF
 echo "Start Success !"
 
 /usr/sbin/sshd -D
+/usr/bin/ss-server -s $SERVER_ADDR \
+                   -p $SERVER_PORT \
+                   -k $PASSWORD \
+                   -m $METHOD \
+                   -t $TIMEOUT \
+                   $FASTOPEN \
+                   -d $DNS_ADDR \
+                   -d $DNS_ADDR_2 \
+                   $UDP_RELAY \
+                   $ARGS \
+                   -f /tmp/ss.pid
