@@ -8,8 +8,8 @@ ARG KCP_URL=https://github.com/xtaci/kcptun/releases/download/v${KCP_VER}/kcptun
 
 ENV ROOT_PASSWORD=centos
 
-RUN yum update -y
-RUN yum install -y initscripts \
+RUN yum update -y && \
+    yum install -y initscripts \
                 epel-release \
                 wget \
                 passwd \
@@ -37,18 +37,18 @@ RUN yum install -y initscripts \
                 libpcre32 \
                 g++
 
-RUN sed -i 's/enabled=0/enabled=1/' /etc/yum.repos.d/CentOS-Base.repo
-RUN echo "root:${ROOT_PASSWORD}" | chpasswd
-RUN cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+RUN sed -i 's/enabled=0/enabled=1/' /etc/yum.repos.d/CentOS-Base.repo && \
+    echo "root:${ROOT_PASSWORD}" | chpasswd && \
+    cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
 # 搭建SSH服务器
-RUN sed -i 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config
-RUN sed -i 's/#UsePAM no/UsePAM no/g' /etc/ssh/sshd_config
-RUN sed -i 's/#PermitRootLogin yes/PermitRootLogin yes/' /etc/ssh/sshd_config
-RUN mkdir -p /root/.ssh/
-RUN echo "StrictHostKeyChecking=no" > /root/.ssh/config
-RUN echo "UserKnownHostsFile=/dev/null" >> /root/.ssh/config
-RUN /etc/init.d/sshd start
+RUN sed -i 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config && \
+    sed -i 's/#UsePAM no/UsePAM no/g' /etc/ssh/sshd_config && \
+    sed -i 's/#PermitRootLogin yes/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+    mkdir -p /root/.ssh/ && \
+    echo "StrictHostKeyChecking=no" > /root/.ssh/config && \
+    echo "UserKnownHostsFile=/dev/null" >> /root/.ssh/config && \
+    /etc/init.d/sshd start && \
 
 # 搭建Shadowsocks服务器
 ENV SERVER_ADDR=0.0.0.0 \
@@ -62,26 +62,26 @@ ENV SERVER_ADDR=0.0.0.0 \
     DNS_ADDR_2=8.8.4.4 \
     ARGS=''
 
-RUN mkdir shadowsocks-libev
-RUN cd shadowsocks-libev
-RUN curl -sSL ${SS_URL} | tar xz --strip 1
-RUN ./configure
-RUN make install
-RUN cd ..
-RUN rm -rf shadowsocks-libev
-RUN git clone https://github.com/shadowsocks/simple-obfs.git
-RUN cd simple-obfs
-RUN git submodule update --init --recursive
-RUN ./autogen.sh
-RUN ./configure
-RUN make
-RUN make install
-RUN cd ..
-RUN rm -rf simple-obfs
+RUN mkdir shadowsocks-libev && \
+    cd shadowsocks-libev && \
+    curl -sSL ${SS_URL} | tar xz --strip 1 && \
+    ./configure && \
+    make install && \
+    cd .. && \
+    rm -rf shadowsocks-libev && \
+    git clone https://github.com/shadowsocks/simple-obfs.git && \
+    cd simple-obfs && \
+    git submodule update --init --recursive && \
+    ./autogen.sh && \
+    ./configure && \
+    make && \
+    make install && \
+    cd .. && \
+    rm -rf simple-obfs && \
 
 # 清理环境
-RUN yum clean all
-RUN rm -rf /var/cache/yum
+RUN yum clean all && \
+    rm -rf /var/cache/yum
 
 # 开放端口
 EXPOSE 22
