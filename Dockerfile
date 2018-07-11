@@ -2,9 +2,9 @@ FROM centos:6
 LABEL MAINTAINER="wnxd <imiku@wnxd.me>"
 
 ARG SS_VER=3.2.0
-ARG SS_URL=https://github.com/shadowsocks/shadowsocks-libev/releases/download/v$SS_VER/shadowsocks-libev-$SS_VER.tar.gz
+ARG SS_URL=https://github.com/shadowsocks/shadowsocks-libev/archive/v${SS_VER}.tar.gz
 ARG KCP_VER=20180316
-ARG KCP_URL=https://github.com/xtaci/kcptun/releases/download/v$KCP_VER/kcptun-linux-amd64-$KCP_VER.tar.gz
+ARG KCP_URL=https://github.com/xtaci/kcptun/releases/download/v${KCP_VER}/kcptun-linux-amd64-${KCP_VER}.tar.gz
 
 ENV ROOT_PASSWORD=centos
 
@@ -62,13 +62,15 @@ ENV SERVER_ADDR=0.0.0.0 \
     DNS_ADDR_2=8.8.4.4 \
     ARGS=''
 
-RUN mkdir shadowsocks-libev
-RUN cd shadowsocks-libev
-RUN curl -sSL $SS_URL | tar xz --strip 1
-RUN ./configure --prefix=/usr --disable-documentation
+RUN curl -sSL ${SS_URL} | tar xz --strip 1
+RUN cd shadowsocks-libev-${SS_VER}
+RUN git submodule update --init --recursive
+RUN ./autogen.sh
+RUN ./configure
+RUN make
 RUN make install
 RUN cd ..
-RUN rm -rf shadowsocks-libev
+RUN rm -rf shadowsocks-libev-${SS_VER}
 RUN git clone https://github.com/shadowsocks/simple-obfs.git
 RUN cd simple-obfs
 RUN git submodule update --init --recursive
