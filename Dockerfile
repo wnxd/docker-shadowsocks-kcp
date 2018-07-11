@@ -48,7 +48,7 @@ RUN sed -i 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config && \
     mkdir -p /root/.ssh/ && \
     echo "StrictHostKeyChecking=no" > /root/.ssh/config && \
     echo "UserKnownHostsFile=/dev/null" >> /root/.ssh/config && \
-    /etc/init.d/sshd start && \
+    /etc/init.d/sshd start
 
 # 搭建Shadowsocks服务器
 ENV SERVER_ADDR=0.0.0.0 \
@@ -77,7 +77,7 @@ RUN mkdir shadowsocks-libev && \
     make && \
     make install && \
     cd .. && \
-    rm -rf simple-obfs && \
+    rm -rf simple-obfs
 
 # 清理环境
 RUN yum clean all && \
