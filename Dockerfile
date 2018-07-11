@@ -62,15 +62,15 @@ ENV SERVER_ADDR=0.0.0.0 \
     DNS_ADDR_2=8.8.4.4 \
     ARGS=''
 
+RUN mkdir shadowsocks-libev
+RUN cd shadowsocks-libev
 RUN curl -sSL ${SS_URL} | tar xz --strip 1
-RUN cd shadowsocks-libev-${SS_VER}
-RUN git submodule update --init --recursive
 RUN ./autogen.sh
 RUN ./configure
 RUN make
 RUN make install
 RUN cd ..
-RUN rm -rf shadowsocks-libev-${SS_VER}
+RUN rm -rf shadowsocks-libev
 RUN git clone https://github.com/shadowsocks/simple-obfs.git
 RUN cd simple-obfs
 RUN git submodule update --init --recursive
