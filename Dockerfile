@@ -8,6 +8,7 @@ ARG KCP_URL=https://github.com/xtaci/kcptun/releases/download/v$KCP_VER/kcptun-l
 
 RUN set -ex && \
     apk upgrade --no-cache && \
+    apk add --no-cache openssh-server && \
     apk add --no-cache --virtual .build-deps \
                                 autoconf \
                                 build-base \
@@ -30,8 +31,7 @@ RUN set -ex && \
                                 asciidoc \
                                 xmlto \
                                 libpcre32 \
-                                g++ \
-                                openssh-server && \
+                                g++ && \
     cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
     cd /tmp && \
     curl -sSL $KCP_URL | tar xz server_linux_amd64 && \
@@ -106,4 +106,4 @@ CMD /usr/bin/ss-server -s $SERVER_ADDR \
               --mtu $KCP_MUT \
               $KCP_NOCOMP \
               $KCP_ARGS && \
-    sshd start
+    /usr/sbin/sshd -D
