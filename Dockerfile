@@ -6,9 +6,8 @@ ARG SS_URL=https://github.com/shadowsocks/shadowsocks-libev/releases/download/v$
 ARG KCP_VER=20180316
 ARG KCP_URL=https://github.com/xtaci/kcptun/releases/download/v$KCP_VER/kcptun-linux-amd64-$KCP_VER.tar.gz
 
-RUN echo -e "https://mirror.tuna.tsinghua.edu.cn/alpine/latest-stable/main\n" > /etc/apk/repositories
-
-RUN apk add --no-cache openssh && \
+RUN echo -e "https://mirror.tuna.tsinghua.edu.cn/alpine/latest-stable/main\n" > /etc/apk/repositories && \
+    apk add --no-cache openssh && \
     apk add --no-cache --virtual .build-deps \
                                 autoconf \
                                 build-base \
@@ -85,9 +84,8 @@ EXPOSE 22
 EXPOSE $SERVER_PORT/tcp $SERVER_PORT/udp
 EXPOSE $KCP_LISTEN/udp
 
-CMD ["/usr/sbin/sshd", "-D"]
-
-CMD /usr/bin/ss-server -s $SERVER_ADDR \
+CMD /usr/sbin/sshd -D && \
+    /usr/bin/ss-server -s $SERVER_ADDR \
               -p $SERVER_PORT \
               -k $PASSWORD \
               -m $METHOD \
