@@ -39,12 +39,8 @@ RUN echo "root:${SYS_ROOT_PASSWORD}" | chpasswd && \
         g++
 
 # 搭建SSH服务器
-RUN sed -i 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config && \
-    sed -i 's/#UsePAM no/UsePAM no/g' /etc/ssh/sshd_config && \
-    sed -i 's/#PermitRootLogin yes/PermitRootLogin yes/' /etc/ssh/sshd_config && \
-    mkdir -p /root/.ssh/ && \
-    echo "StrictHostKeyChecking=no" > /root/.ssh/config && \
-    echo "UserKnownHostsFile=/dev/null" >> /root/.ssh/config
+RUN sed -i 's/#PermitRootLogin yes/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+    ssh-keygen -A
 
 # 清理环境
 RUN rm -rf /var/cache/apk/* /tmp/*
