@@ -1,4 +1,4 @@
-FROM alpine
+FROM alpine:3.8
 LABEL MAINTAINER="wnxd <imiku@wnxd.me>"
 
 ARG SS_VER=3.2.0
@@ -9,7 +9,7 @@ ARG KCP_URL=https://github.com/xtaci/kcptun/releases/download/v${KCP_VER}/kcptun
 ENV SYS_ROOT_PASSWORD=alpine \
     SYS_TIMEZONE=Asia/Shanghai
 
-RUN echo "root:${ROOT_PASSWORD}" | chpasswd && \
+RUN echo "root:${SYS_ROOT_PASSWORD}" | chpasswd && \
     echo "${SYS_TIMEZONE}" > /etc/timezone && \
     ln -sf /usr/share/zoneinfo/${SYS_TIMEZONE} /etc/localtime && \
     apk --no-cache upgrade && \
