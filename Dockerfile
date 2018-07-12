@@ -6,9 +6,12 @@ ARG SS_URL=https://github.com/shadowsocks/shadowsocks-libev/releases/download/v$
 ARG KCP_VER=20180316
 ARG KCP_URL=https://github.com/xtaci/kcptun/releases/download/v${KCP_VER}/kcptun-linux-amd64-${KCP_VER}.tar.gz
 
-RUN echo "root:alpine" | chpasswd && \
-    echo "Asia/Shanghai" > /etc/timezone && \
-    ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+ENV ROOT_PASSWORD=alpine \
+    TIMEZONE=Asia/Shanghai
+
+RUN echo "root:${ROOT_PASSWORD}" | chpasswd && \
+    echo "${TIMEZONE}" > /etc/timezone && \
+    ln -sf /usr/share/zoneinfo/${TIMEZONE}} /etc/localtime && \
     apk --no-cache upgrade && \
     apk --no-cache add \
         openssh-server \
@@ -36,8 +39,7 @@ RUN echo "root:alpine" | chpasswd && \
         g++
 
 # 搭建SSH服务器
-RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
-    ssh-keygen -A
+RUN ssh-keygen -A
 
 # 清理环境
 RUN rm -rf /var/cache/apk/* /tmp/*
