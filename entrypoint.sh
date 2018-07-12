@@ -15,6 +15,10 @@ Enjoy your Docker-Linux Node !
 EOF
 echo "Start Success !"
 
+if [ ! -z "${SYS_ROOT_PASSWORD}" ] && [ "${SYS_ROOT_PASSWORD}" != "root" ]; then
+    echo "root:${SYS_ROOT_PASSWORD}" | chpasswd
+fi
+
 /usr/sbin/sshd -D
 # /usr/bin/ss-server -s $SERVER_ADDR \
 #                    -p $SERVER_PORT \
