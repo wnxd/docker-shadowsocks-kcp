@@ -21,8 +21,8 @@
 
 | Item          |       Value |
 | :------------ | ----------: |
-| KCP_LISTEN    |        8990 |
-| KCP_PASS      |        wnxd |
+| KCP_PORT      |        8990 |
+| KCP_PASSWORD  |        wnxd |
 | KCP_ENCRYPT   |     aes-192 |
 | KCP_MODE      |       fast2 |
 | KCP_MUT       |        1350 |

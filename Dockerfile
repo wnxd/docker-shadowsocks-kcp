@@ -12,7 +12,7 @@ ENV TIMEZONE=Asia/Shanghai
 RUN echo "${TIMEZONE}" > /etc/timezone && \
     ln -sf /usr/share/zoneinfo/${TIMEZONE}} /etc/localtime && \
     apk --no-cache upgrade && \
-    apk --no-cache add \
+    apk --no-cache --virtual .build-deps add \
         openssh-server \
         autoconf \
         build-base \
@@ -35,12 +35,13 @@ RUN echo "${TIMEZONE}" > /etc/timezone && \
         asciidoc \
         xmlto \
         libpcre32 \
-        g++
+        g++ && \
+    cd /tmp
 
-# 搭建SSH服务器
+# 部署ssh服务器
 RUN ssh-keygen -A
 
-# 搭建Shadowsocks服务器
+# 部署shadowsocks服务器
 ENV SS_PORT=8989
 ENV SS_PASSWORD=wnxd
 ENV SS_METHOD=aes-256-cfb
@@ -57,7 +58,6 @@ RUN mkdir shadowsocks-libev && \
     ./configure --prefix=/usr --disable-documentation && \
     make install && \
     cd .. && \
-    rm -rf shadowsocks-libev && \
     git clone https://github.com/shadowsocks/simple-obfs.git && \
     cd simple-obfs && \
     git submodule update --init --recursive && \
@@ -65,11 +65,40 @@ RUN mkdir shadowsocks-libev && \
     ./configure && \
     make && \
     make install && \
-    cd .. && \
-    rm -rf simple-obfs
+    cd ..
+
+# 部署kcptun服务器
+ENV KCP_PORT=8990
+ENV KCP_PASSWORD=wnxd
+ENV KCP_ENCRYPT=aes-192
+ENV KCP_MODE=fast2
+ENV KCP_MUT=1350
+ENV KCP_NOCOMP=''
+ENV KCP_ARGS=''
+
+RUN curl -sSL ${KCP_URL} | tar xz server_linux_amd64 && \
+    mv server_linux_amd64 /usr/bin/
+
+# 添加运行环境
+RUN sshd_runDeps="$( \
+        scanelf --needed --nobanner /usr/sbin/sshd \
+            | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
+            | xargs -r apk info --installed \
+            | sort -u \
+    )" && \
+    ss_runDeps="$( \
+        scanelf --needed --nobanner /usr/bin/ss-* \
+            | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
+            | xargs -r apk info --installed \
+            | sort -u \
+    )" && \
+    apk add --no-cache --virtual .run-deps $sshd_runDeps && \
+    apk add --no-cache --virtual .run-deps $ss_runDeps
 
 # 清理环境
-RUN rm -rf /var/cache/apk/* /tmp/*
+RUN cd .. && \
+    apk del .build-deps && \
+    rm -rf /var/cache/apk/* /tmp/*
 
 # 开放端口
 EXPOSE 22
