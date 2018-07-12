@@ -36,7 +36,7 @@ RUN echo "root:alpine" | chpasswd && \
         g++
 
 # 搭建SSH服务器
-RUN sed -i 's/#PermitRootLogin yes/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
     ssh-keygen -A
 
 # 清理环境
