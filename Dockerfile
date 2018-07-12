@@ -44,8 +44,7 @@ RUN sed -i 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config && \
     sed -i 's/#PermitRootLogin yes/PermitRootLogin yes/' /etc/ssh/sshd_config && \
     mkdir -p /root/.ssh/ && \
     echo "StrictHostKeyChecking=no" > /root/.ssh/config && \
-    echo "UserKnownHostsFile=/dev/null" >> /root/.ssh/config && \
-    /etc/init.d/sshd start
+    echo "UserKnownHostsFile=/dev/null" >> /root/.ssh/config
 
 # 清理环境
 RUN rm -rf /var/cache/apk/* /tmp/*
