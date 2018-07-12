@@ -14,7 +14,7 @@ RUN echo "root:${SYS_ROOT_PASSWORD}" | chpasswd && \
     ln -sf /usr/share/zoneinfo/${SYS_TIMEZONE} /etc/localtime && \
     apk --no-cache upgrade && \
     apk --no-cache add \
-        openssl-server \
+        openssh-server \
         autoconf \
         build-base \
         curl \
