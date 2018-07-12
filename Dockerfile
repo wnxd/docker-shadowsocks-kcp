@@ -1,4 +1,4 @@
-FROM centos:6
+FROM alpine
 LABEL MAINTAINER="wnxd <imiku@wnxd.me>"
 
 ARG SS_VER=3.2.0
@@ -6,43 +6,37 @@ ARG SS_URL=https://github.com/shadowsocks/shadowsocks-libev/releases/download/v$
 ARG KCP_VER=20180316
 ARG KCP_URL=https://github.com/xtaci/kcptun/releases/download/v${KCP_VER}/kcptun-linux-amd64-${KCP_VER}.tar.gz
 
-ENV ROOT_PASSWORD=centos
+ENV SYS_ROOT_PASSWORD=alpine \
+    SYS_TIMEZONE=Asia/Shanghai
 
-RUN yum update -y && \
-    yum install -y openssh-server \
-                git \
-                vim \
-                screen \
-                gettext \
-                gcc \
-                autoconf \
-                libtool \
-                automake \
-                make \
-                asciidoc \
-                xmlto \
-                udns-devel \
-                mbedtls-devel \
-                libev-devel \
-                zlib-devel \
-                openssl-devel \
-                unzip \
-                libevent \
-                pcre \
-                pcre-devel \
-                perl \
-                perl-devel \
-                cpio \
-                expat-devel \
-                gettext-devel \
-                htop \
-                rng-tools \
-                c-ares-devel \
-                libsodium-devel
-
-RUN sed -i 's/enabled=0/enabled=1/' /etc/yum.repos.d/CentOS-Base.repo && \
-    echo "root:${ROOT_PASSWORD}" | chpasswd && \
-    cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+RUN echo "root:${ROOT_PASSWORD}" | chpasswd && \
+    echo "${SYS_TIMEZONE}" > /etc/timezone && \
+    ln -sf /usr/share/zoneinfo/${SYS_TIMEZONE} /etc/localtime && \
+    apk --no-cache upgrade && \
+    apk --no-cache add \
+        openssl-server \
+        autoconf \
+        build-base \
+        curl \
+        libev-dev \
+        linux-headers \
+        libsodium-dev \
+        mbedtls-dev \
+        pcre-dev \
+        tar \
+        tzdata \
+        c-ares-dev \
+        git \
+        gcc \
+        make \
+        libtool \
+        zlib-dev \
+        automake \
+        openssl \
+        asciidoc \
+        xmlto \
+        libpcre32 \
+        g++
 
 # 搭建SSH服务器
 RUN sed -i 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config && \
@@ -53,38 +47,8 @@ RUN sed -i 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config && \
     echo "UserKnownHostsFile=/dev/null" >> /root/.ssh/config && \
     /etc/init.d/sshd start
 
-# 搭建Shadowsocks服务器
-ENV SERVER_ADDR=0.0.0.0 \
-    SERVER_PORT=8989 \
-    PASSWORD=wnxd \
-    METHOD=aes-256-cfb \
-    TIMEOUT=300 \
-    FASTOPEN=--fast-open \
-    UDP_RELAY=-u \
-    DNS_ADDR=8.8.8.8 \
-    DNS_ADDR_2=8.8.4.4 \
-    ARGS=''
-
-RUN mkdir shadowsocks-libev && \
-    cd shadowsocks-libev && \
-    curl -sSL ${SS_URL} | tar xz --strip 1 && \
-    ./configure --prefix=/usr --disable-documentation && \
-    make install && \
-    cd .. && \
-    rm -rf shadowsocks-libev && \
-    git clone https://github.com/shadowsocks/simple-obfs.git && \
-    cd simple-obfs && \
-    git submodule update --init --recursive && \
-    ./autogen.sh && \
-    ./configure && \
-    make && \
-    make install && \
-    cd .. && \
-    rm -rf simple-obfs
-
 # 清理环境
-RUN yum clean all && \
-    rm -rf /var/cache/yum
+RUN rm -rf /var/cache/apk/* /tmp/*
 
 # 开放端口
 EXPOSE 22
