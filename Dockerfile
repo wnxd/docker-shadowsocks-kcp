@@ -79,25 +79,8 @@ ENV KCP_ARGS=''
 RUN curl -sSL ${KCP_URL} | tar xz server_linux_amd64 && \
     mv server_linux_amd64 /usr/bin/
 
-# 添加运行环境
-RUN sshd_runDeps="$( \
-        scanelf --needed --nobanner /usr/sbin/sshd \
-            | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
-            | xargs -r apk info --installed \
-            | sort -u \
-    )" && \
-    ss_runDeps="$( \
-        scanelf --needed --nobanner /usr/bin/ss-* \
-            | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
-            | xargs -r apk info --installed \
-            | sort -u \
-    )" && \
-    apk add --no-cache --virtual .run-deps $sshd_runDeps && \
-    apk add --no-cache --virtual .run-deps $ss_runDeps
-
 # 清理环境
 RUN cd .. && \
-    apk del .build-deps && \
     rm -rf /var/cache/apk/* /tmp/*
 
 # 开放端口
