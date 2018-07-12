@@ -15,8 +15,9 @@ Enjoy your Docker-Linux Node !
 EOF
 echo "Start Success !"
 
+cat /etc/ssh/sshd_config
+
 if [ ! -z "${ROOT_PASSWORD}" ] && [ "${ROOT_PASSWORD}" != "root" ]; then
-    echo "root:${ROOT_PASSWORD}"
     echo "root:${ROOT_PASSWORD}" | chpasswd
 fi
 
