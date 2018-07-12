@@ -16,7 +16,7 @@ EOF
 
 echo "root:$ROOT_PASSWORD" | chpasswd
 
-setsid /usr/sbin/sshd -D -e -o PermitRootLogin=yes
+(nohup /usr/sbin/sshd -D -e -o PermitRootLogin=yes) &
 
 # /usr/bin/ss-server -s 0.0.0.0 \
 #                    -p $SS_PORT \
