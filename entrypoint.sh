@@ -13,17 +13,21 @@ Hostname : $(uname -n)
 Enjoy your Docker-Linux Node !
 
 EOF
-echo "Start Success !"
+
+echo "root:$ROOT_PASSWORD" | chpasswd
 
 /usr/sbin/sshd -D -e -o PermitRootLogin=yes
-# /usr/bin/ss-server -s $SERVER_ADDR \
-#                    -p $SERVER_PORT \
-#                    -k $PASSWORD \
-#                    -m $METHOD \
-#                    -t $TIMEOUT \
-#                    $FASTOPEN \
-#                    -d $DNS_ADDR \
-#                    -d $DNS_ADDR_2 \
-#                    $UDP_RELAY \
-#                    $ARGS \
-#                    -f /tmp/ss.pid
+
+/usr/bin/ss-server -s 0.0.0.0 \
+                   -p $SS_PORT \
+                   -k $SS_PASSWORD \
+                   -m $SS_METHOD \
+                   -t $SS_TIMEOUT \
+                   $SS_FASTOPEN \
+                   -d $SS_DNS \
+                   -d $SS_DNS2 \
+                   $SS_UDP_RELAY \
+                   $SS_ARGS \
+                   -f /tmp/ss.pid
+
+echo "Start Success !"
