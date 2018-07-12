@@ -16,7 +16,7 @@ EOF
 
 echo "root:$ROOT_PASSWORD" | chpasswd
 
-/usr/sbin/sshd -D -e -o PermitRootLogin=yes
+/usr/sbin/sshd -D -e -o PermitRootLogin=yes &
 
 /usr/bin/ss-server -s 0.0.0.0 \
                    -p $SS_PORT \
@@ -28,6 +28,6 @@ echo "root:$ROOT_PASSWORD" | chpasswd
                    -d $SS_DNS2 \
                    $SS_UDP_RELAY \
                    $SS_ARGS \
-                   -f /tmp/ss.pid
+                   -f /tmp/ss.pid &
 
 echo "Start Success !"
