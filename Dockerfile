@@ -87,6 +87,7 @@ RUN cd .. && \
 EXPOSE 22
 EXPOSE ${SS_PORT}/tcp
 EXPOSE ${SS_PORT}/udp
+EXPOSE ${KCP_PORT}/udp
 
 # 启动命令
 ADD entrypoint.sh /usr/bin/entrypoint.sh
