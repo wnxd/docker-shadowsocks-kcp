@@ -39,4 +39,4 @@ echo "Start Success !"
                              $KCP_NOCOMP \
                              $KCP_ARGS) &
 
-/usr/sbin/sshd -D -e -o PermitRootLogin=yes
+/usr/sbin/sshd -D -e -o PermitRootLogin=yes UseDNS=no
