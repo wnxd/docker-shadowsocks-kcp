@@ -30,13 +30,13 @@ echo "Start Success !"
                     $SS_ARGS \
                     -f /tmp/ss.pid) &
 
-/usr/bin/server_linux_amd64 -t "127.0.0.1:$SS_PORT" \
+(/usr/bin/server_linux_amd64 -t "127.0.0.1:$SS_PORT" \
                              -l ":$KCP_PORT" \
                              -key $KCP_PASSWORD \
                              --mode $KCP_MODE \
                              --crypt $KCP_ENCRYPT \
                              --mtu $KCP_MUT \
                              $KCP_NOCOMP \
-                             $KCP_ARGS
+                             $KCP_ARGS) &
 
-# /usr/sbin/sshd -D -e -o PermitRootLogin=yes
+/usr/sbin/sshd -D -e -o PermitRootLogin=yes
